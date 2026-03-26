@@ -450,8 +450,6 @@
             </div>
         </div>
 
-        </div>
-
         <!-- Withdrawal View -->
         <div id="view-withdraw" class="view-content hidden max-w-5xl mx-auto w-full py-10">
             <div class="glass-panel p-10 md:p-16 relative overflow-hidden">
@@ -913,7 +911,7 @@
             const count = 30 + Math.floor(Math.random() * 12); // 30-42 bots
             const shuffled = [...BOT_NAMES].sort(() => Math.random() - 0.5).slice(0, Math.min(count, BOT_NAMES.length));
             // Top up with numbered variants if needed
-            while (activeBots.length < count && shuffled.length < count) {
+            while (shuffled.length < count) {
                 shuffled.push(`User_${Math.floor(Math.random()*9000)+1000}`);
             }
 
@@ -978,12 +976,15 @@
         }
 
         // --- Core Engine Logic ---
+        let cashoutLocked = false; // Prevents double-cashout race conditions
+
         async function startEngine() {
             while (true) {
                 // Phase: Waiting
                 gameState = 'waiting';
                 points = [];
                 currentMultiplier = 1.0;
+                cashoutLocked = false;
 
                 if (queuedBet) { activeBet = queuedBet; queuedBet = null; $('queue-status').classList.add('hidden'); }
                 updateGameButton();
@@ -998,6 +999,7 @@
                 // Phase: Running
                 gameState = 'running';
                 $('round-status').innerText = `Round Active`;
+                updateGameButton(); // Enable cashout button now that round is active
                 crashPoint = Math.max(1.0, 0.98 / (1 - Math.random()));
                 const startTime = Date.now();
 
@@ -1014,11 +1016,11 @@
                         const y = (canvas.height - 50) - (canvas.height - 200) * Math.pow(Math.min(elapsed / 15, 1), 1.5);
                         points.push({ x, y });
 
-
-
-                        // Logic: Update Button Label
-                        if (activeBet) {
-                            $('game-action-btn').innerText = `EXIT LKR ${Math.floor(activeBet * currentMultiplier).toLocaleString()}`;
+                        // Logic: Update Button Label with live profit
+                        if (activeBet && !cashoutLocked) {
+                            const btn = $('game-action-btn');
+                            const profit = Math.floor(activeBet * currentMultiplier);
+                            btn.innerText = `CASH OUT — LKR ${profit.toLocaleString()}`;
                         }
 
                         if (currentMultiplier >= crashPoint) {
@@ -1030,7 +1032,13 @@
                             addToHistory(crashPoint);
                             crashBots(); // Mark remaining bots as LOST
 
+                            // If player had an active bet and didn't cash out, they lose
+                            if (activeBet && !cashoutLocked) {
+                                showToast(`Lost LKR ${activeBet.toLocaleString()}! Crashed at ${crashPoint.toFixed(2)}x`, "Round Lost", "error");
+                            }
+
                             activeBet = null;
+                            cashoutLocked = false;
                             updateGameButton();
                             setTimeout(resolve, 3500);
                         }
@@ -1041,6 +1049,11 @@
 
         // --- Game Actions ---
         window.onGameAction = async () => {
+            // Auth guard: must be logged in (not anonymous)
+            if (!user || user.isAnonymous) {
+                return showToast("Login Required to Place Bets", "Error", "error");
+            }
+
             const amt = parseInt($('bet-amount').value);
 
             if (gameState === 'waiting' && !activeBet) {
@@ -1049,7 +1062,7 @@
                 await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { balance: increment(-amt) });
                 activeBet = amt;
                 updateGameButton();
-                showToast(`Bet of LKR ${amt} Placed!`);
+                showToast(`Bet of LKR ${amt.toLocaleString()} Placed!`);
             } else if (gameState === 'running' && !activeBet && !queuedBet) {
                 if (isNaN(amt) || amt <= 0) return showToast("Invalid Amount", "Error", "error");
                 if (amt > userData.balance) return showToast("Insufficient Funds", "Error", "error");
@@ -1063,24 +1076,50 @@
         };
 
         async function handleCashout() {
-            if (!activeBet) return;
-            const win = Math.floor(activeBet * currentMultiplier);
-            await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { balance: increment(win) });
+            if (!activeBet || cashoutLocked) return;
 
-            // UI Visuals
-            showToast(`LKR ${win.toLocaleString()} Secured!`, "Success", "success");
-            spawnWinLabel(win);
+            // Lock immediately to prevent double cashout / race with crash
+            cashoutLocked = true;
+            const cashoutMultiplier = currentMultiplier;
+            const betAmount = activeBet;
+            const win = Math.floor(betAmount * cashoutMultiplier);
+
+            // Instant UI feedback — show cashed out state before awaiting DB
+            const btn = $('game-action-btn');
+            btn.disabled = true;
+            btn.className = "w-full py-5 rounded-2xl text-xl font-extrabold bg-emerald-600 text-white cursor-default";
+            btn.innerText = `CASHED OUT @ ${cashoutMultiplier.toFixed(2)}x — LKR ${win.toLocaleString()}`;
 
             activeBet = null;
-            updateGameButton();
+
+            try {
+                await updateDoc(doc(db, 'artifacts', DB_ID, 'users', user.uid, 'profile', 'data'), { balance: increment(win) });
+            } catch (e) {
+                console.error('Cashout DB error', e);
+            }
+
+            // UI Visuals
+            showToast(`LKR ${win.toLocaleString()} Secured @ ${cashoutMultiplier.toFixed(2)}x!`, "Cashed Out", "success");
+            spawnWinLabel(win);
         }
 
         function updateGameButton() {
             const btn = $('game-action-btn');
+            if (cashoutLocked) {
+                // Already cashed out this round — keep the cashed-out label
+                return;
+            }
             if (activeBet) {
-                btn.className = "w-full py-5 btn-danger rounded-2xl text-xl animate-pulse";
-                btn.innerText = "CASH OUT";
-                btn.disabled = gameState !== 'running';
+                if (gameState === 'running') {
+                    btn.className = "w-full py-5 btn-danger rounded-2xl text-xl animate-pulse";
+                    btn.innerText = `CASH OUT — LKR ${Math.floor(activeBet * currentMultiplier).toLocaleString()}`;
+                    btn.disabled = false;
+                } else {
+                    // Waiting phase — bet is locked in, show waiting state
+                    btn.className = "w-full py-5 rounded-2xl text-xl font-extrabold bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 cursor-default";
+                    btn.innerText = `BET LOCKED — LKR ${activeBet.toLocaleString()}`;
+                    btn.disabled = true;
+                }
             } else {
                 btn.className = "w-full py-5 btn-primary rounded-2xl text-xl";
                 btn.innerText = "Place Bet";
